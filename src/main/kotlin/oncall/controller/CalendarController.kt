@@ -3,6 +3,7 @@ package oncall.controller
 import oncall.view.View
 import oncall.domain.InputValidator
 import oncall.domain.CalendarService
+import oncall.model.MonthCalender
 import oncall.model.NumberBasket
 import oncall.resources.Messages.*
 
@@ -14,6 +15,8 @@ class CalendarController(
     fun makeWorkSchedule() {
         val monthWithDate: Pair<Int,String> = readStartDayWithRetry()
         val names: Pair<List<String>, List<String>> = readEmergencyNamesWithRetry()
+        val monthCalender = MonthCalender(monthWithDate, names)
+        println(monthCalender.getEmergencySchedule())
     }
 
     private fun readStartDayWithRetry(): Pair<Int, String> {
