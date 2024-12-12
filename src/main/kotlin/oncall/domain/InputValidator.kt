@@ -16,8 +16,14 @@ class InputValidator {
         require(splitInput[1] in dateNames) { WRONG_DATE_NAME.errorMessage() }
         return Pair(splitInput[0].toInt(), splitInput[1])
     }
-
-
+    fun validateNamesInput(input: String): List<String> {
+        require(input.isNotBlank()) { EMPTY_INPUT.errorMessage() }
+        val splitInput = input.split(',')
+        require(splitInput.size >= 5 && splitInput.size <= 35) { NAME_COUNT.errorMessage() }
+        require(splitInput.all { it.length <= 5 && it.isNotEmpty() }) { INVALID_NAME.errorMessage() }
+        require(splitInput.distinct().size == splitInput.size) { DUPLICATE_NAME.errorMessage() }
+        return splitInput
+    }
 
     // 샘플 코드 모음
     private fun validateSplitInputText(input: String): List<String> {

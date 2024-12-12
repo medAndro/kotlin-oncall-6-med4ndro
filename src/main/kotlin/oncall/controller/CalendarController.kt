@@ -12,14 +12,14 @@ class CalendarController(
     private val calendarService: CalendarService
 ) {
     fun makeWorkSchedule() {
-        val monthWithDate = readStartDayWithRetry(START_DAY_INPUT_HEADER.message())
-        println(monthWithDate)
+        val monthWithDate: Pair<Int,String> = readStartDayWithRetry()
+        val names: Pair<List<String>, List<String>> = readEmergencyNamesWithRetry()
     }
 
-    private fun readStartDayWithRetry(infoMessage: String): Pair<Int, String> {
+    private fun readStartDayWithRetry(): Pair<Int, String> {
         while (true) {
             try {
-                view.showMessage(infoMessage)
+                view.showMessage(START_DAY_INPUT_HEADER.message())
                 return validator.validateDate(view.readLine())
             } catch (e: IllegalArgumentException) {
                 view.showMessageBr(e.message ?: INVALID_ERROR.errorMessage())
@@ -27,13 +27,18 @@ class CalendarController(
         }
     }
 
-    private fun generateNumberBasket(): NumberBasket {
-        val basket = NumberBasket()
-
-        basket.addNumber(readNumberWithRetry(START_DAY_INPUT_HEADER.message()))
-        basket.addNumber(readNumberWithRetry(RIGHT_VALUE_INPUT.infoMessage()))
-
-        return basket
+    private fun readEmergencyNamesWithRetry(): Pair<List<String>, List<String>>{
+        while (true) {
+            try {
+                view.showMessage(WEEKDAY_NAME_INPUT_HEADER.message())
+                val weekday = validator.validateNamesInput(view.readLine())
+                view.showMessage(HOLIDAY_NAME_INPUT_HEADER.message())
+                val holiday = validator.validateNamesInput(view.readLine())
+                return Pair(weekday, holiday)
+            } catch (e: IllegalArgumentException) {
+                view.showMessageBr(e.message ?: INVALID_ERROR.errorMessage())
+            }
+        }
     }
 
     private fun readNumberWithRetry(infoMessage: String): Int {
