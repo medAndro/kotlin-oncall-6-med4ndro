@@ -11,10 +11,19 @@ import java.util.*
 class MonthCalender(private val monthWithDate: Pair<Int,String>, private val names: Pair<List<String>, List<String>>) {
     private val organizedNames: MutableList<String> = mutableListOf()
 
-    fun getEmergencySchedule():List<String> {
+    fun getEmergencySchedule(): List<String> {
         setOrganizedNames()
-        return organizedNames.toList()
+        var dateIndex =
+            dateNameIndex[monthWithDate.second] ?: throw IllegalArgumentException(INVALID_ERROR.errorMessage())
+        val fullSchedule: MutableList<String> = mutableListOf()
+
+        for (day in 1..monthLengths[monthWithDate.first - 1]){
+            fullSchedule.add("${monthWithDate.first}월 ${day}일 ${dateNames[dateIndex % 7]}${getSpecialHolidayTag(day)} ${organizedNames[day-1]}")
+            dateIndex += 1
+        }
+        return fullSchedule
     }
+
     private fun setOrganizedNames() {
         val workdayStack = Stack<String>()
         val holidayStack = Stack<String>()
@@ -52,8 +61,17 @@ class MonthCalender(private val monthWithDate: Pair<Int,String>, private val nam
 
     private fun isHoliday(currentDay: Int, dateIndex: Int): Boolean {
         val specialHoliday =
-            specialHolidays[monthWithDate.first] ?: throw IllegalArgumentException(INVALID_ERROR.errorMessage())
+            specialHolidays[monthWithDate.first] ?: listOf()
         return (dateIndex % 7 >= 5) || currentDay in specialHoliday
+    }
+
+    private fun getSpecialHolidayTag(currentDay: Int): String {
+        val specialHoliday =
+            specialHolidays[monthWithDate.first] ?: listOf()
+        if (currentDay in specialHoliday){
+            return "(휴일)"
+        }
+        return ""
     }
 
     companion object {
@@ -61,5 +79,6 @@ class MonthCalender(private val monthWithDate: Pair<Int,String>, private val nam
         val specialHolidays = mapOf(1 to listOf(1), 3 to listOf(1), 5 to listOf(5),
             6 to listOf(6), 8 to listOf(15), 10 to listOf(3, 9), 12 to listOf(25))
         val dateNameIndex = mapOf("월" to 0, "화" to 1, "수" to 2, "목" to 3, "금" to 4, "토" to 5, "일" to 6)
+        val dateNames = listOf("월", "화", "수", "목", "금", "토", "일")
     }
 }

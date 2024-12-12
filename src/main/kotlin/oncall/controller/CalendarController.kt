@@ -16,7 +16,8 @@ class CalendarController(
         val monthWithDate: Pair<Int,String> = readStartDayWithRetry()
         val names: Pair<List<String>, List<String>> = readEmergencyNamesWithRetry()
         val monthCalender = MonthCalender(monthWithDate, names)
-        println(monthCalender.getEmergencySchedule())
+        view.showBlankLine()
+        view.showMessageBr(monthCalender.getEmergencySchedule().joinToString("\n"))
     }
 
     private fun readStartDayWithRetry(): Pair<Int, String> {
