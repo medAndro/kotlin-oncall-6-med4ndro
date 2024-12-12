@@ -1,5 +1,8 @@
 package oncall
 
+import oncall.controller.CalendarController
+
 fun main() {
-    TODO("프로그램 구현")
+    val game = CalendarController.create()
+    game.gameStart()
 }
