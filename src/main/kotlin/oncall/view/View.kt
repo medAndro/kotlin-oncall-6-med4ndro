@@ -13,7 +13,11 @@ class View {
         println()
     }
 
-    fun showMessage(message: String) {
+    fun showMessageBr(message: String) {
         println(message)
+    }
+
+    fun showMessage(message: String) {
+        print(message)
     }
 }

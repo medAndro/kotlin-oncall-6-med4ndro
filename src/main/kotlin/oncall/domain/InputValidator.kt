@@ -8,6 +8,17 @@ class InputValidator {
         return input.toIntOrNull() ?: throw IllegalArgumentException(NOT_INTEGER.errorMessage())
     }
 
+    fun validateDate(input: String): Pair<Int, String> {
+        require(input.isNotBlank()) { EMPTY_INPUT.errorMessage() }
+        require(input.count{it == ','} == 1) { DELIMITER_COUNT.errorMessage() }
+        val splitInput = input.split(',')
+        require(splitInput[0].toInt() in 1..12) { WRONG_MONTH.errorMessage() }
+        require(splitInput[1] in dateNames) { WRONG_DATE_NAME.errorMessage() }
+        return Pair(splitInput[0].toInt(), splitInput[1])
+    }
+
+
+
     // 샘플 코드 모음
     private fun validateSplitInputText(input: String): List<String> {
         val splitInput = input.split(',')
@@ -59,5 +70,8 @@ class InputValidator {
         require(input.none {
             it.isBlank() || it.length < 2 || it.length > 4
         }) { "이름 형식이 올바르지 않습니다" }
+    }
+    companion object {
+        val dateNames = listOf("월", "화", "수", "목", "금", "토", "일")
     }
 }

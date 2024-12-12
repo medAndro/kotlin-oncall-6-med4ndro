@@ -11,18 +11,26 @@ class CalendarController(
     private val validator: InputValidator,
     private val calendarService: CalendarService
 ) {
-    fun gameStart() {
-        val numberBasket = generateNumberBasket()
-        view.showMessage(SUM_START_HEADER.message())
-        view.showBlankLine()
+    fun makeWorkSchedule() {
+        val monthWithDate = readStartDayWithRetry(START_DAY_INPUT_HEADER.message())
+        println(monthWithDate)
+    }
 
-        announceSumNumbers(numberBasket)
+    private fun readStartDayWithRetry(infoMessage: String): Pair<Int, String> {
+        while (true) {
+            try {
+                view.showMessage(infoMessage)
+                return validator.validateDate(view.readLine())
+            } catch (e: IllegalArgumentException) {
+                view.showMessageBr(e.message ?: INVALID_ERROR.errorMessage())
+            }
+        }
     }
 
     private fun generateNumberBasket(): NumberBasket {
         val basket = NumberBasket()
 
-        basket.addNumber(readNumberWithRetry(LEFT_VALUE_INPUT.infoMessage()))
+        basket.addNumber(readNumberWithRetry(START_DAY_INPUT_HEADER.message()))
         basket.addNumber(readNumberWithRetry(RIGHT_VALUE_INPUT.infoMessage()))
 
         return basket

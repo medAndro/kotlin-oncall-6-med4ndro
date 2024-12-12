@@ -3,6 +3,6 @@ package oncall
 import oncall.controller.CalendarController
 
 fun main() {
-    val game = CalendarController.create()
-    game.gameStart()
+    val calender = CalendarController.create()
+    calender.makeWorkSchedule()
 }
