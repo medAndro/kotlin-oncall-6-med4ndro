@@ -2,18 +2,15 @@ package oncall.controller
 
 import oncall.view.View
 import oncall.domain.InputValidator
-import oncall.domain.CalendarService
 import oncall.model.MonthCalender
-import oncall.model.NumberBasket
 import oncall.resources.Messages.*
 
 class CalendarController(
     private val view: View,
-    private val validator: InputValidator,
-    private val calendarService: CalendarService
+    private val validator: InputValidator
 ) {
     fun makeWorkSchedule() {
-        val monthWithDate: Pair<Int,String> = readStartDayWithRetry()
+        val monthWithDate: Pair<Int, String> = readStartDayWithRetry()
         val names: Pair<List<String>, List<String>> = readEmergencyNamesWithRetry()
         val monthCalender = MonthCalender(monthWithDate, names)
         view.showBlankLine()
@@ -31,7 +28,7 @@ class CalendarController(
         }
     }
 
-    private fun readEmergencyNamesWithRetry(): Pair<List<String>, List<String>>{
+    private fun readEmergencyNamesWithRetry(): Pair<List<String>, List<String>> {
         while (true) {
             try {
                 view.showMessage(WEEKDAY_NAME_INPUT_HEADER.message())
@@ -45,29 +42,11 @@ class CalendarController(
         }
     }
 
-    private fun readNumberWithRetry(infoMessage: String): Int {
-        while (true) {
-            try {
-                view.showMessage(infoMessage)
-                return validator.validateInteger(view.readLine())
-            } catch (e: IllegalArgumentException) {
-                view.showMessage(e.message ?: INVALID_ERROR.errorMessage())
-            }
-        }
-    }
-
-    private fun announceSumNumbers(numberBasket: NumberBasket) {
-        val expression = calendarService.getExpression(numberBasket)
-        val sumValue = calendarService.plusTwoNumber(numberBasket)
-        view.showMessage(SUM_RESULT.formattedMessage(expression, sumValue))
-    }
-
     companion object {
         fun create(): CalendarController {
             val view = View()
             val inputValidator = InputValidator()
-            val calendarService = CalendarService()
-            return CalendarController(view, inputValidator, calendarService)
+            return CalendarController(view, inputValidator)
         }
     }
 }
