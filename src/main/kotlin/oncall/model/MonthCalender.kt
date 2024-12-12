@@ -20,44 +20,37 @@ class MonthCalender(private val monthWithDate: Pair<Int, String>, private val na
     }
 
     private fun setOrganizedNames() {
-        val workdayStack = Stack<String>()
-        val holidayStack = Stack<String>()
-        var workdayIndex = 0
-        var holidayIndex = 0
+        val stacks = mutableListOf(Stack<String>(), Stack<String>())
+        val nameIndexes = mutableListOf(0, 0)
         val monthLength = monthLengths[monthWithDate.first - 1]
         var dateIndex =
             dateNameIndex[monthWithDate.second] ?: throw IllegalArgumentException(INVALID_ERROR.errorMessage())
-        var lastName = ""
         for (currentDay in 1..monthLength) {
-            val isHoliday = isHoliday(currentDay, dateIndex)
-
-            if (!isHoliday) {
-                while (workdayStack.isEmpty() || workdayStack.last() == lastName) {
-                    workdayStack.push(names.first[workdayIndex])
-                    workdayIndex = (workdayIndex + 1) % names.first.size
-                }
-                organizedNames.add(workdayStack.pop())
-                lastName = organizedNames.last()
-            }
-
-            if (isHoliday) {
-                while (holidayStack.isEmpty() || holidayStack.last() == lastName) {
-                    holidayStack.push(names.second[holidayIndex])
-                    holidayIndex = (holidayIndex + 1) % names.second.size
-                }
-                organizedNames.add(holidayStack.pop())
-                lastName = organizedNames.last()
-            }
-
+            val holidayIndex = getHolidayIndex(currentDay, dateIndex)
+            setOrganizedName(stacks, nameIndexes, holidayIndex)
             dateIndex += 1
         }
     }
 
+    private fun setOrganizedName(stacks: MutableList<Stack<String>>, nameIndexes: MutableList<Int>, holidayIndex: Int) {
+        var lastName = ""
+        if (organizedNames.isNotEmpty()) {
+            lastName = organizedNames.last()
+        }
+        while (stacks[holidayIndex].isEmpty() || stacks[holidayIndex].last() == lastName) {
+            stacks[holidayIndex].push(names.toList()[holidayIndex][nameIndexes[holidayIndex]])
+            nameIndexes[holidayIndex] = (nameIndexes[holidayIndex] + 1) % names.toList()[holidayIndex].size
+        }
+        organizedNames.add(stacks[holidayIndex].pop())
+    }
 
-    private fun isHoliday(currentDay: Int, dateIndex: Int): Boolean {
+    private fun getHolidayIndex(currentDay: Int, dateIndex: Int): Int {
         val specialHoliday =
             specialHolidays[monthWithDate.first] ?: listOf()
-        return (dateIndex % 7 >= 5) || currentDay in specialHoliday
+        if ((dateIndex % 7 >= 5) || currentDay in specialHoliday) {
+            return 1
+        }
+        return 0
     }
 
     private fun getSpecialHolidayTag(currentDay: Int): String {
